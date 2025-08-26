@@ -42,8 +42,8 @@ Follow these steps to get a local copy of the project up and running on your mac
 * **Google Account:** Required for Firebase and Gemini API access.
 
 ## 🚀 Deployement Link (Firebase)
-### Link()
-* **deployment** (https://ai-assistant-69269.web.app)
+### Link
+* **Deployment** (https://ai-assistant-69269.web.app)
 
 ### 1. Clone the Repository
 
