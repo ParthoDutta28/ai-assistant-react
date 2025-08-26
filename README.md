@@ -46,3 +46,7 @@ Follow these steps to get a local copy of the project up and running on your mac
 ```bash
 git clone [https://github.com/ParthoDutta28/ai-assistant-react.git](https://github.com/ParthoDutta28/ai-assistant-react.git)
 cd ai-assistant-react
+
+## 🚀 Deployement Link (Firebase)
+### Link()
+* **deployment** []([](https://ai-assistant-69269.web.app)) ().
