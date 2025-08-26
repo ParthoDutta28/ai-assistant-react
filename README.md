@@ -41,12 +41,14 @@ Follow these steps to get a local copy of the project up and running on your mac
 * **Git:** [Download & Install Git](https://git-scm.com/downloads).
 * **Google Account:** Required for Firebase and Gemini API access.
 
+## 🚀 Deployement Link (Firebase)
+### Link()
+* **deployment** (https://ai-assistant-69269.web.app)
+
 ### 1. Clone the Repository
 
 ```bash
 git clone [https://github.com/ParthoDutta28/ai-assistant-react.git](https://github.com/ParthoDutta28/ai-assistant-react.git)
 cd ai-assistant-react
 
-## 🚀 Deployement Link (Firebase)
-### Link()
-* **deployment** []([](https://ai-assistant-69269.web.app)) ().
+
