@@ -86,20 +86,25 @@ export default function App() {
   useEffect(() => {
     const initializeFirebase = async () => {
       try {
-        // >>> START MODIFICATION FOR LOCAL RUNNING - YOUR PROVIDED CONFIG IS HERE <<<
+        // >>> START MODIFICATION FOR LOCAL RUNNING - READING FROM .env <<<
+        // For local development, read Firebase config from environment variables
         const YOUR_ACTUAL_FIREBASE_CONFIG = {
-          apiKey: "AIzaSyARwbynX_H3QyL6Sr4RmuZul6zb54RfNoQ",
-          authDomain: "ai-assistant-69269.firebaseapp.com",
-          projectId: "ai-assistant-69269",
-          storageBucket: "ai-assistant-69269.firebasestorage.app",
-          messagingSenderId: "408226894080",
-          appId: "1:408226894080:web:c767927f849008c1a423e5",
-          measurementId: "G-8PBX1R3N74"
+          apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+          authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+          projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+          storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+          messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+          appId: process.env.REACT_APP_FIREBASE_APP_ID,
+          measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
         };
-        const YOUR_ACTUAL_APP_ID = YOUR_ACTUAL_FIREBASE_CONFIG.appId; // Extract appId from your config
+        const YOUR_ACTUAL_APP_ID = YOUR_ACTUAL_FIREBASE_CONFIG.appId;
 
         // Use your actual config for initialization
         if (!appRef.current) {
+          // Check if essential Firebase config values are present
+          if (!YOUR_ACTUAL_FIREBASE_CONFIG.apiKey || !YOUR_ACTUAL_FIREBASE_CONFIG.projectId) {
+            throw new Error("Missing Firebase environment variables. Please check your .env file.");
+          }
           appRef.current = initializeApp(YOUR_ACTUAL_FIREBASE_CONFIG);
           dbRef.current = getFirestore(appRef.current);
           authRef.current = getAuth(appRef.current);
@@ -122,7 +127,7 @@ export default function App() {
 
       } catch (err) {
         console.error("Firebase initialization or authentication error:", err);
-        setError("Failed to initialize the app. Please try again.");
+        setError(`Failed to initialize the app: ${err.message}. Ensure .env is set up.`);
       }
     };
 
@@ -134,7 +139,11 @@ export default function App() {
     if (!dbRef.current || !userId) return;
 
     // Use the determined appId for the Firestore collection path
-    const currentAppId = "1:408226894080:web:c767927f849008c1a423e5"; // Your actual appId from the config
+    const currentAppId = process.env.REACT_APP_FIREBASE_APP_ID; // Your actual appId from the config
+    if (!currentAppId) {
+      console.error("Firebase App ID not found. Check .env file.");
+      return;
+    }
     const interactionsCollectionRef = collection(dbRef.current, `artifacts/${currentAppId}/users/${userId}/assistant_interactions`);
     const q = query(interactionsCollectionRef, orderBy('timestamp', 'desc'));
 
@@ -185,7 +194,13 @@ export default function App() {
     }
 
     try {
-      const apiKey = "AIzaSyCFoq0ZOmUqdcBJg_kfUfoKYnplwGxJZIU"; 
+      // >>> START MODIFICATION FOR LOCAL RUNNING - READING FROM .env <<<
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY; // Read Gemini API Key from environment variable
+      if (!apiKey) {
+        throw new Error("Gemini API Key not found. Please set REACT_APP_GEMINI_API_KEY in your .env file.");
+      }
+      // >>> END MODIFICATION FOR LOCAL RUNNING <<<
+
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
       const payload = {
@@ -215,7 +230,11 @@ export default function App() {
 
         // Store interaction in Firestore
         if (dbRef.current && userId) {
-          const currentAppId = "1:408226894080:web:c767927f849008c1a423e5"; // Your actual appId from the config
+          const currentAppId = process.env.REACT_APP_FIREBASE_APP_ID; // Your actual appId from the config
+          if (!currentAppId) {
+            console.error("Firebase App ID not found for Firestore write.");
+            return;
+          }
           await addDoc(collection(dbRef.current, `artifacts/${currentAppId}/users/${userId}/assistant_interactions`), {
             prompt: userInput,
             aiResponse: aiResponse,
@@ -242,7 +261,11 @@ export default function App() {
 
     // Update the last interaction with feedback by adding a new feedback record.
     try {
-      const currentAppId = "1:408226894080:web:c767927f849008c1a423e5"; // Your actual appId from the config
+      const currentAppId = process.env.REACT_APP_FIREBASE_APP_ID; // Your actual appId from the config
+      if (!currentAppId) {
+        console.error("Firebase App ID not found for feedback write.");
+        return;
+      }
       await addDoc(collection(dbRef.current, `artifacts/${currentAppId}/users/${userId}/assistant_interactions`), {
         type: "feedback", // Indicate this is a feedback entry
         forInteractionId: chatHistory[0].id, // Link to the most recent interaction
